@@ -39,6 +39,7 @@ namespace MyWebApi
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "MyWebApi", Version = "v1" });
                 c.SwaggerDoc("v2", new OpenApiInfo { Title = "MyWebApi", Version = "v2" });
+                c.SwaggerDoc("v3", new OpenApiInfo { Title = "MyWebApi", Version = "v3" });
                 c.ResolveConflictingActions(a => a.First());
                 c.OperationFilter<RemoveVersionFromParameter>();
                 c.DocumentFilter<ReplaceVersionWithExactValuePath>();
@@ -56,6 +57,7 @@ namespace MyWebApi
                 {
                     c.SwaggerEndpoint("/swagger/v1/swagger.json", "MyWebApi v1");
                     c.SwaggerEndpoint("/swagger/v2/swagger.json", "MyWebApi v2");
+                    c.SwaggerEndpoint("/swagger/v3/swagger.json", "MyWebApi v3");
                 });
             }
 

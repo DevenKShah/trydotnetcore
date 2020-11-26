@@ -8,6 +8,7 @@ namespace MyWebApi.Controllers
 {
     [ApiController]
     [ApiVersion("1")]
+    [ApiVersion("2")]
     [Route("/api/v{version:apiVersion}/[controller]")]
     [ApiExplorerSettings(GroupName = "v1")]
     public class WeatherForecastController : ControllerBase
@@ -37,7 +38,8 @@ namespace MyWebApi.Controllers
             .ToArray();
         }
 
-        [MapToApiVersion("2.0")]
+        [MapToApiVersion("2")]
+        [ApiExplorerSettings(GroupName = "v2")]
         [HttpGet]
         public IEnumerable<WeatherForecast> GetV2()
         {
@@ -51,10 +53,10 @@ namespace MyWebApi.Controllers
         }
     }
 
-    [ApiVersion("2")]
+    [ApiVersion("3")]
     [ApiController]
     [Route("/api/v{version:apiVersion}/WeatherForecast")]
-    [ApiExplorerSettings(GroupName = "v2")]
+    [ApiExplorerSettings(GroupName = "v3")]
     public class WeatherForecastV2Controller: ControllerBase
     {
         [HttpGet]
@@ -65,7 +67,7 @@ namespace MyWebApi.Controllers
             {
                 Date = DateTime.Now.AddDays(index),
                 TemperatureC = rng.Next(-20, 55),
-                Summary = "v2"
+                Summary = "v3"
             })
             .ToArray();
         }

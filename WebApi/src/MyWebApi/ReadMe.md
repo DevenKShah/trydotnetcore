@@ -46,7 +46,7 @@ services.AddSwaggerGen(c =>
 {
     c.SwaggerDoc("v1", new OpenApiInfo { Title = "MyWebApi", Version = "v1" });
     c.SwaggerDoc("v2", new OpenApiInfo { Title = "MyWebApi", Version = "v1" });
-    c.ResolveConflictingActions(a => a.First());
+    c.ResolveConflictingActions(a => a.First()); //If multiple actions found list the first one
     c.OperationFilter<RemoveVersionFromParameter>();
     c.DocumentFilter<ReplaceVersionWithExactValuePath>();
 });
@@ -68,4 +68,26 @@ Decorate controller with following attributes:
 [ApiVersion("1")]
 [Route("/api/v{version:apiVersion}/[controller]")]
 [ApiExplorerSettings(GroupName = "v1")]
+public class WeatherForecastController : ControllerBase
+```
+
+#### To add new version within the same controller:
+
+- Decorate action with:
+
+```c#
+    [MapToApiVersion("2")]
+    [ApiExplorerSettings(GroupName = "v2")]
+    [HttpGet]
+    public IEnumerable<WeatherForecast> GetV2()
+```
+
+- Decorate controller with:
+
+```c#
+[ApiController]
+[ApiVersion("1")]
+[ApiVersion("2")]
+[Route("/api/v{version:apiVersion}/[controller]")]
+public class WeatherForecastController : ControllerBase
 ```
