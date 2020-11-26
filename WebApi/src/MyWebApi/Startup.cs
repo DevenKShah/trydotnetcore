@@ -1,15 +1,11 @@
-using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Versioning;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
 using MyWebApi.Filters;
 
@@ -32,8 +28,10 @@ namespace MyWebApi
             services.AddApiVersioning();
             services.AddApiVersioning(o => 
             {
-                o.AssumeDefaultVersionWhenUnspecified = true;
+                o.AssumeDefaultVersionWhenUnspecified = true; //defaults to DefaultApiVersion
                 o.DefaultApiVersion = new ApiVersion(1, 0);
+                o.ApiVersionReader = new HeaderApiVersionReader("X-Version");
+                o.ReportApiVersions = true; //returns the supported versions in response header
             });
             services.AddSwaggerGen(c =>
             {
@@ -43,6 +41,7 @@ namespace MyWebApi
                 c.ResolveConflictingActions(a => a.First());
                 c.OperationFilter<RemoveVersionFromParameter>();
                 c.DocumentFilter<ReplaceVersionWithExactValuePath>();
+                c.OperationFilter<SwaggerOperationVersionHeaderFilter>();
             });
         }
 
