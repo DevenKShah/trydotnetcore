@@ -11,6 +11,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
+using MyWebApi.Filters;
 
 namespace MyWebApi
 {
@@ -28,9 +29,19 @@ namespace MyWebApi
         {
 
             services.AddControllers();
+            services.AddApiVersioning();
+            services.AddApiVersioning(o => 
+            {
+                o.AssumeDefaultVersionWhenUnspecified = true;
+                o.DefaultApiVersion = new ApiVersion(1, 0);
+            });
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "MyWebApi", Version = "v1" });
+                c.SwaggerDoc("v2", new OpenApiInfo { Title = "MyWebApi", Version = "v2" });
+                c.ResolveConflictingActions(a => a.First());
+                c.OperationFilter<RemoveVersionFromParameter>();
+                c.DocumentFilter<ReplaceVersionWithExactValuePath>();
             });
         }
 
@@ -41,7 +52,11 @@ namespace MyWebApi
             {
                 app.UseDeveloperExceptionPage();
                 app.UseSwagger();
-                app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "MyWebApi v1"));
+                app.UseSwaggerUI(c => 
+                {
+                    c.SwaggerEndpoint("/swagger/v1/swagger.json", "MyWebApi v1");
+                    c.SwaggerEndpoint("/swagger/v2/swagger.json", "MyWebApi v2");
+                });
             }
 
             app.UseHttpsRedirection();
