@@ -1,3 +1,4 @@
+using System;
 using System.Linq;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -8,6 +9,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
 using MyWebApi.Filters;
+using MyWebApi.Infrastructure;
 
 namespace MyWebApi
 {
@@ -43,6 +45,7 @@ namespace MyWebApi
                 c.DocumentFilter<ReplaceVersionWithExactValuePath>();
                 c.OperationFilter<SwaggerOperationVersionHeaderFilter>();
             });
+            services.AddHttpClient<IWeatherForecastService, WeatherForecastService>("metaweather", c => c.BaseAddress = new Uri(Configuration["MeteWeatherApiBaseUrl"]));
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

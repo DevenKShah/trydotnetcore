@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using MyWebApi.Infrastructure;
 
 namespace MyWebApi.Controllers
 {
@@ -18,24 +20,21 @@ namespace MyWebApi.Controllers
             "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
         };
 
-        private readonly ILogger<WeatherForecastController> _logger;
+        private readonly ILogger<WeatherForecastController> logger;
+        private readonly IWeatherForecastService weatherForecastService;
 
-        public WeatherForecastController(ILogger<WeatherForecastController> logger)
+        public WeatherForecastController(ILogger<WeatherForecastController> logger, IWeatherForecastService weatherForecastService)
         {
-            _logger = logger;
+            this.logger = logger;
+            this.weatherForecastService = weatherForecastService;
         }
 
         [HttpGet]
-        public IEnumerable<WeatherForecast> Get()
+        public async Task<IActionResult> Get(string cityName)
         {
-            var rng = new Random();
-            return Enumerable.Range(1, 5).Select(index => new WeatherForecast
-            {
-                Date = DateTime.Now.AddDays(index),
-                TemperatureC = rng.Next(-20, 55),
-                Summary = Summaries[rng.Next(Summaries.Length)]
-            })
-            .ToArray();
+            var fc = await weatherForecastService.GetWeatherForecast(new GetWeatherForecastRequest(cityName));
+            var x = fc.Consolidated_Weather.Select(f => (WeatherForecast)f);
+            return Ok(new {CityName = fc.Title, Forecast = x});
         }
 
         [MapToApiVersion("2")]
